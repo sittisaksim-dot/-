@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ลงทะเบียนติดตั้ง - AIS FIBER</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Kanit', sans-serif; background-color: #f4f7f6; }
+        .card { border-radius: 15px; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .btn-success { background-color: #74B82D; border: none; }
+        .btn-success:hover { background-color: #5d9424; }
+        .header-logo { color: #74B82D; font-weight: 600; text-align: center; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card p-4">
+                <div class="header-logo">
+                    <h3>AIS FIBER REGISTRATION</h3>
+                    <p class="text-muted small">บันทึกข้อมูลการติดตั้งใหม่</p>
+                </div>
+                
+                <form id="regForm">
+                    <div class="mb-3">
+                        <label class="form-label">ชื่อ-นามสกุลลูกค้า</label>
+                        <input type="text" id="custName" class="form-control" placeholder="ระบุชื่อลูกค้า" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">เบอร์โทรศัพท์</label>
+                        <input type="tel" id="custPhone" class="form-control" placeholder="08XXXXXXXX" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">NON ID</label>
+                        <input type="text" id="nonId" class="form-control" placeholder="ระบุเลข NON ID" required>
+                    </div>
+                    
+                    <button type="button" onclick="submitData()" class="btn btn-success w-100 py-2 mt-3">✅ บันทึกข้อมูล</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+<script>
+    // 1. เริ่มต้น LIFF โดยใส่ LIFF ID ของคุณที่นี่
+    async function main() {
+        await liff.init({ liffId: "ใส่_LIFF_ID_ของคุณตรงนี้" });
+        if (!liff.isLoggedIn()) {
+            liff.login();
+        }
+    }
+    main();
+
+    // 2. ฟังก์ชันส่งข้อความกลับเข้าแชท
+    function submitData() {
+        const name = document.getElementById("custName").value;
+        const phone = document.getElementById("custPhone").value;
+        const nonid = document.getElementById("nonId").value;
+
+        if (!name || !phone || !nonid) {
+            alert("กรุณากรอกข้อมูลให้ครบถ้วน");
+            return;
+        }
+
+        // สร้างข้อความรูปแบบเดียวกับที่ Apps Script รอรับอยู่
+        const msg = `ลงทะเบียน/${name}/${phone}/${nonid}`;
+
+        liff.sendMessages([
+            {
+                type: 'text',
+                text: msg
+            }
+        ]).then(() => {
+            liff.closeWindow(); // ส่งเสร็จแล้วปิดหน้าจอทันที
+        }).catch((err) => {
+            alert("เกิดข้อผิดพลาด: " + err);
+        });
+    }
+</script>
+
+</body>
+</html>
